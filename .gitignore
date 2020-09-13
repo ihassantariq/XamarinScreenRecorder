@@ -206,6 +206,7 @@ rcf/
 
 # Windows Store app package directories and files
 AppPackages/
+
 BundleArtifacts/
 Package.StoreAssociation.xml
 _pkginfo.txt
@@ -348,3 +349,5 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+~/VideoRecorder/DLLs/
