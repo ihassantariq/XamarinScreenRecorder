@@ -11,6 +11,7 @@ namespace VideoRecorder.Droid
         //Declare HBRecorder
         private HBRecorder hbRecorder;
         private MainActivity _context;
+        private MediaProjectionManager mediaProjectionManager;
         public VideoRecorderService(MainActivity activity, HBRecorder _hbRecorder)
         {
             hbRecorder = _hbRecorder;
@@ -51,10 +52,11 @@ namespace VideoRecorder.Droid
         public void StartRecordingNow()
         {
             _context.QuickSettings();
-            MediaProjectionManager mediaProjectionManager = (MediaProjectionManager)_context.GetSystemService(Context.MediaProjectionService);
+            mediaProjectionManager = (MediaProjectionManager)_context.GetSystemService(Context.MediaProjectionService);
             Intent permissionIntent = mediaProjectionManager != null ? mediaProjectionManager.CreateScreenCaptureIntent() : null;
 
             _context.StartActivityForResult(permissionIntent, MainActivity.SCREEN_RECORD_REQUEST_CODE);
+
         }
 
 

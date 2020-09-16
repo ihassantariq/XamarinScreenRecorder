@@ -28,6 +28,7 @@ using AndroidX.Annotations;
 using AndroidX.Core.App;
 using AndroidX.Core.Content;
 using Xamarin.Essentials;
+using Android.Media.Projection;
 
 namespace VideoRecorder.Droid
 {
@@ -118,7 +119,7 @@ namespace VideoRecorder.Droid
 
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
         {
-            base.OnActivityResult(requestCode, resultCode, data);
+          // base.OnActivityResult(requestCode, resultCode, data);
             if (requestCode == SCREEN_RECORD_REQUEST_CODE)
             {
                 if (resultCode == Result.Ok)
@@ -126,7 +127,7 @@ namespace VideoRecorder.Droid
                     //Set file path or Uri depending on SDK version
                     SetOutputPath();
                     //Start screen recording
-                    hbRecorder.StartScreenRecording(data, requestCode, this);
+                    hbRecorder.StartScreenRecording(data, (int)resultCode, this);
                 }
             }
 
@@ -428,6 +429,53 @@ namespace VideoRecorder.Droid
                     Debug.WriteLine("Folder ", "created");
                 }
             }
+        }
+        //remove this code
+
+        public void StartScreenRecording()
+        {
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
+            {
+                //first check if permissions was granted
+                if (CheckSelfPermission(Manifest.Permission.RecordAudio, MainActivity.PERMISSION_REQ_ID_RECORD_AUDIO) && CheckSelfPermission(Manifest.Permission.WriteExternalStorage, MainActivity.PERMISSION_REQ_ID_WRITE_EXTERNAL_STORAGE))
+                {
+                    hasPermissions = true;
+                }
+                if (hasPermissions)
+                {
+                    //check if recording is in progress
+                    //and stop it if it is
+                    if (hbRecorder.IsBusyRecording)
+                    {
+                        hbRecorder.StopScreenRecording();
+                    }
+                    //else start recording
+                    else
+                    {
+                        StartRecordingNow();
+                    }
+                }
+            }
+            else
+            {
+                //showLongToast("This library requires API 21>");
+            }
+        }
+        private MediaProjectionManager mediaProjectionManager;
+        public void StartRecordingNow()
+        {
+            QuickSettings();
+            mediaProjectionManager = (MediaProjectionManager)GetSystemService(Context.MediaProjectionService);
+            Intent permissionIntent = mediaProjectionManager != null ? mediaProjectionManager.CreateScreenCaptureIntent() : null;
+
+            StartActivityForResult(permissionIntent, MainActivity.SCREEN_RECORD_REQUEST_CODE);
+
+        }
+
+
+        public void StopRecording()
+        {
+            hbRecorder.StopScreenRecording();
         }
 
     }
